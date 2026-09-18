@@ -34,7 +34,7 @@ export const Login = () => {
     setLoading(true);
     try {
       const client = window.google.accounts.oauth2.initTokenClient({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '485458051770-placeholder.apps.googleusercontent.com',
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '129894565811-q5ei75o8nj3gqdp2bhfk92lhppvdoke8.apps.googleusercontent.com',
         scope: 'openid profile email',
         callback: async (tokenResponse) => {
           if (tokenResponse && tokenResponse.access_token) {
