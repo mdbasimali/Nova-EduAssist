@@ -64,7 +64,9 @@ const corsOptions = {
 };
 
 // Security Middlewares
-app.use(helmet());
+app.use(helmet({
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+}));
 app.use(cors(corsOptions));
 
 // Body parser
@@ -72,7 +74,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Health Check Endpoint
-app.get('/api/health', (req, res) => {
+app.get(['/health', '/api/health'], (req, res) => {
   res.status(200).json({
     success: true,
     service: 'Nova EduAssist API',
@@ -81,12 +83,17 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Routes
-app.use('/api/questions', questionRoutes);
-app.use('/api/assessments', assessmentRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/skill-enhance', skillEnhanceRoutes);
-app.use('/api/consent', consentRoutes);
+// Routes - mounted with /api and fallback without /api for maximum client resilience
+const mountRoutes = (prefix = '') => {
+  app.use(`${prefix}/questions`, questionRoutes);
+  app.use(`${prefix}/assessments`, assessmentRoutes);
+  app.use(`${prefix}/auth`, authRoutes);
+  app.use(`${prefix}/skill-enhance`, skillEnhanceRoutes);
+  app.use(`${prefix}/consent`, consentRoutes);
+};
+
+mountRoutes('/api');
+mountRoutes('');
 
 // Catch-all route not found
 app.use((req, res, next) => {
